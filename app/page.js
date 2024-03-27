@@ -6,7 +6,7 @@
 
 import DefaultTopBar from "./DefaultTopBar";
 import DefualtMainBody from "./DefualtMainBody";
-import PaginationSoft from "./PaginationSoft";
+import PaginationSoft from "./list/PaginationSoft";
 
 export default function Component() {
   return (
