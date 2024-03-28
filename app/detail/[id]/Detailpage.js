@@ -11,6 +11,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import Link from "next/link";
 
 export default function Detailpage({ post_data }) {
   return (
@@ -28,9 +29,13 @@ export default function Detailpage({ post_data }) {
             {post_data.content}
           </p>
           <div className="flex items-center justify-end mt-4">
-            <Button size="icon" variant="ghost">
-              <FileEditIcon className="h-5 w-5" />
-            </Button>
+            <Link href={`/edit/${post_data._id}`}>
+              {" "}
+              <Button size="icon" variant="ghost">
+                <FileEditIcon className="h-5 w-5" />
+              </Button>
+            </Link>
+
             <Button
               size="icon"
               variant="ghost"
