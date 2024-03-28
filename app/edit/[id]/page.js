@@ -13,7 +13,7 @@ export default async function page(props) {
 
   return (
     <div>
-      <ListBar title="New Post" NameofButton="None" />
+      <ListBar title="Edit Post" NameofButton="None" />
       <Editfile post_data={post_data} />
     </div>
   );

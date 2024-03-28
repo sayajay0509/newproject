@@ -1,7 +1,10 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import Link from "next/link";
-function DefaultSideBar() {
+import { signIn, signOut } from "next-auth/react";
+import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
+function DefaultSideBar({ session }) {
   return (
     <aside className="w-full lg:w-64 border-r bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-800 dark:to-gray-900">
       <div className="flex items-center justify-between px-6 py-4 border-b">
@@ -29,6 +32,7 @@ function DefaultSideBar() {
           className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-50"
           href="#"
         >
+          {" "}
           <SettingsIcon className="h-5 w-5" />
           <span>Settings</span>
         </Link>
@@ -36,17 +40,43 @@ function DefaultSideBar() {
           className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-50"
           href="#"
         >
-          <LogInIcon className="h-5 w-5" />
-          <span>Sign In</span>
+          <UserPlusIcon className="h-5 w-5" />
+          <span>Register</span>
         </Link>
-        <Link
-          className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-50"
-          href="#"
-        >
-          <LogOutIcon className="h-5 w-5" />
-          <span>Sign Out</span>
-        </Link>
+        {session ? (
+          <Link
+            onClick={() => {
+              signOut();
+            }}
+            className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-50"
+            href="#"
+          >
+            <LogOutIcon className="h-5 w-5" />
+            <span>Sign Out</span>
+          </Link>
+        ) : (
+          <Link
+            className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-50"
+            href="/api/auth/signin?callbackUrl=http%3A%2F%2Flocalhost%3A3000%2F"
+          >
+            <LogInIcon className="h-5 w-5" />
+            <span>Sign In</span>
+          </Link>
+        )}
       </nav>
+      <div className="px-6 py-4 border-t">
+        <div className="flex items-center space-x-2">
+          {session ? (
+            <>
+              <Avatar className="h-9 w-9">
+                <AvatarImage alt="User Name" src={session.user.image} />
+                <AvatarFallback>UN</AvatarFallback>
+              </Avatar>
+              <span className="text-sm font-medium">{session.user.name}</span>
+            </>
+          ) : null}
+        </div>
+      </div>{" "}
     </aside>
   );
 }
@@ -171,6 +201,27 @@ function UsersIcon(props) {
       <circle cx="9" cy="7" r="4" />
       <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
       <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+function UserPlusIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <line x1="19" x2="19" y1="8" y2="14" />
+      <line x1="22" x2="16" y1="11" y2="11" />
     </svg>
   );
 }
