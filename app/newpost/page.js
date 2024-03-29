@@ -1,9 +1,8 @@
-"use client";
 import React from "react";
 import ListBar from "../list/ListBar";
 import Newpost from "./Newpost";
 
-function page() {
+export default async function page() {
   return (
     <div>
       <ListBar title="New Post" NameofButton="None" />
@@ -11,5 +10,3 @@ function page() {
     </div>
   );
 }
-
-export default page;

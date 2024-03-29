@@ -23,28 +23,16 @@ export default function Registerpage() {
             <div className="grid grid-cols-1 gap-4">
               <div>
                 <Label htmlFor="username">Username</Label>
-                <Input
-                  name="user_name"
-                  id="username"
-                  placeholder="Username"
-                  required
-                />
+                <Input name="name" placeholder="Username" required />
               </div>
               <div>
                 <Label htmlFor="email">Email</Label>
-                <Input
-                  name="user_email"
-                  id="email"
-                  placeholder="Email"
-                  required
-                  type="email"
-                />
+                <Input name="email" placeholder="Email" required type="email" />
               </div>
               <div>
                 <Label htmlFor="password">Password</Label>
                 <Input
-                  name="user_password"
-                  id="password"
+                  name="password"
                   placeholder="Password"
                   required
                   type="password"
@@ -53,8 +41,7 @@ export default function Registerpage() {
               <div>
                 <Label htmlFor="confirm-password">Confirm Password</Label>
                 <Input
-                  name="user_confirm_password"
-                  id="confirm-password"
+                  name="confirm_password"
                   placeholder="Confirm Password"
                   required
                   type="password"

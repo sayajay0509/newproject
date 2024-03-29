@@ -4,6 +4,7 @@ import {
   CardHeader,
   Card,
 } from "@/components/ui/card";
+import getRelativeTime from "@/util/SetTime";
 import Link from "next/link";
 
 function ListItem({ post_data }) {
@@ -18,10 +19,10 @@ function ListItem({ post_data }) {
                 <div className="flex items-center gap-2">
                   <HeartIcon className="h-5 w-5" />
                   <span>{post.likeCount}</span>
-                  <span>Time</span>
+                  <span>{getRelativeTime(new Date(post.publishDate))}</span>
                 </div>
               </CardTitle>
-              <CardDescription>{post.authoremail}</CardDescription>
+              <CardDescription>{post.username}</CardDescription>
             </CardHeader>
           </Card>
         </Link>

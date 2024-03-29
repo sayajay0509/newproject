@@ -14,16 +14,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { connectDB } from "@/util/database";
 import { ObjectId } from "mongodb";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/pages/api/auth/[...nextauth]";
+
 export default async function page(props) {
   let db = (await connectDB).db("forum");
   let post_data = await db
     .collection("post")
     .findOne({ _id: new ObjectId(props.params) });
+  let session = await getServerSession(authOptions);
 
   return (
     <div>
       <ListBar title="User Community" NameofButton="New Post" />
-      <Detailpage props={props} post_data={post_data} />
+      <Detailpage session={session} props={props} post_data={post_data} />
     </div>
   );
 }

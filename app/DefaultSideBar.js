@@ -23,7 +23,7 @@ function DefaultSideBar({ session }) {
         </Link>
         <Link
           className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-50"
-          href="#"
+          href="/list/1"
         >
           <UsersIcon className="h-5 w-5" />
           <span>Users</span>
@@ -38,7 +38,7 @@ function DefaultSideBar({ session }) {
         </Link>
         <Link
           className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-50"
-          href="#"
+          href="/register"
         >
           <UserPlusIcon className="h-5 w-5" />
           <span>Register</span>
@@ -70,7 +70,7 @@ function DefaultSideBar({ session }) {
             <>
               <Avatar className="h-9 w-9">
                 <AvatarImage alt="User Name" src={session.user.image} />
-                <AvatarFallback>UN</AvatarFallback>
+                <AvatarFallback>User</AvatarFallback>
               </Avatar>
               <span className="text-sm font-medium">{session.user.name}</span>
             </>

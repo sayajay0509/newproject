@@ -8,19 +8,23 @@ import {
   Card,
   CardFooter,
 } from "@/components/ui/card";
+import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
+import getRelativeTime from "@/util/SetTime";
 
-export default function Detailpage({ post_data }) {
+export default function Detailpage({ post_data, session }) {
   return (
     <div className="px-6 py-4 space-y-4">
       <Card>
         <CardHeader>
           <CardTitle className="flex flex-col lg:flex-row justify-between items-center lg:items-start">
             <span>{post_data.title}</span>
-            <div className="flex items-center gap-2">Time</div>
+            <div className="flex items-center gap-2">
+              {getRelativeTime(new Date(post_data.publishDate))}
+            </div>
           </CardTitle>
           <CardDescription>{post_data.authoremail}</CardDescription>
         </CardHeader>
@@ -29,38 +33,41 @@ export default function Detailpage({ post_data }) {
             {post_data.content}
           </p>
           <div className="flex items-center justify-end mt-4">
-            <Link href={`/edit/${post_data._id}`}>
-              {" "}
-              <Button size="icon" variant="ghost">
-                <FileEditIcon className="h-5 w-5" />
-              </Button>
-            </Link>
+            {session?.user?.email === post_data.useremail ? (
+              <Link href={`/edit/${post_data._id}`}>
+                <Button size="icon" variant="ghost">
+                  <FileEditIcon className="h-5 w-5" />
+                </Button>
+              </Link>
+            ) : null}
 
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => {
-                fetch("/api/delete/delete", {
-                  method: "DELETE", // or 'PUT'
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(post_data._id),
-                })
-                  .then((res) => {
-                    if (res.ok) {
-                      window.location.href = "/list/1";
-                    } else {
-                      throw new Error("Error in delete");
-                    }
+            {session?.user?.email === post_data.useremail ? (
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => {
+                  fetch("/api/delete/delete", {
+                    method: "DELETE", // or 'PUT'
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(post_data._id),
                   })
-                  .catch((error) => {
-                    console.error("Error:", error);
-                  });
-              }}
-            >
-              <TrashIcon className="h-5 w-5" />
-            </Button>
+                    .then((res) => {
+                      if (res.ok) {
+                        window.location.href = "/list/1";
+                      } else {
+                        throw new Error("Error in delete");
+                      }
+                    })
+                    .catch((error) => {
+                      console.error("Error:", error);
+                    });
+                }}
+              >
+                <TrashIcon className="h-5 w-5" />
+              </Button>
+            ) : null}
           </div>
           <div className="flex items-center justify-between mt-4">
             <Button className="group" size="sm" variant="ghost">
@@ -73,13 +80,93 @@ export default function Detailpage({ post_data }) {
               Comment{"\n                          "}
             </Button>
           </div>
-          <CardFooter>
-            <Textarea placeholder="Write a comment..." />
-            <Button className="mt-2">Post Comment</Button>
-          </CardFooter>
+          <form method="POST" actions="" className="space-y-4">
+            <CardFooter>
+              <Textarea placeholder="Write a comment..." />
+              <Button className="mt-2">Post Comment</Button>
+            </CardFooter>
+          </form>
         </CardContent>
       </Card>
+      <div className="space-y-4">
+        <div className="flex items-start gap-4">
+          <Avatar className="w-10 h-10 border">
+            <AvatarImage alt="@shadcn" src="/placeholder-user.jpg" />
+            <AvatarFallback>AC</AvatarFallback>
+          </Avatar>
+          <div className="grid gap-1.5">
+            <div className="flex items-center gap-2">
+              <div className="font-semibold">@JohnDoe</div>
+              <div className="text-gray-500 text-xs dark:text-gray-400">
+                5 minutes ago
+              </div>
+            </div>
+            <div>Great post! I found it very informative.</div>
+            <div className="space-y-4 mt-4">
+              <div className="flex items-start gap-4">
+                <Avatar className="w-8 h-8 border">
+                  <AvatarImage alt="@shadcn" src="/placeholder-user.jpg" />
+                  <AvatarFallback>AC</AvatarFallback>
+                </Avatar>
+                <div className="grid gap-1.5">
+                  <div className="flex items-center gap-2">
+                    <div className="font-semibold">@JaneDoe</div>
+                    <div className="text-gray-500 text-xs dark:text-gray-400">
+                      3 minutes ago
+                    </div>
+                  </div>
+                  <div>I agree with you, John!</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-start gap-4">
+          <Avatar className="w-10 h-10 border">
+            <AvatarImage alt="@shadcn" src="/placeholder-user.jpg" />
+            <AvatarFallback>AC</AvatarFallback>
+          </Avatar>
+          <div className="grid gap-1.5">
+            <div className="flex items-center gap-2">
+              <div className="font-semibold">@JaneDoe</div>
+              <div className="text-gray-500 text-xs dark:text-gray-400">
+                10 minutes ago
+              </div>
+            </div>
+            <div>Thanks for sharing this post. It was really helpful.</div>
+            <div className="flex items-center space-x-2 mt-2">
+              <Button size="icon" variant="ghost">
+                <ReplyIcon className="h-5 w-5" />
+              </Button>
+              <span className="text-gray-500 dark:text-gray-400">Reply</span>
+            </div>
+            <div className="mt-2">
+              <Textarea placeholder="Write a reply..." />
+              <Button className="mt-2">Post Reply</Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  );
+}
+function ReplyIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="9 17 4 12 9 7" />
+      <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
+    </svg>
   );
 }
 function HeartIcon(props) {
