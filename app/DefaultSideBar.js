@@ -4,11 +4,14 @@ import React from "react";
 import Link from "next/link";
 import { signIn, signOut } from "next-auth/react";
 import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
+import { PuffLoader } from "react-spinners";
+
 function DefaultSideBar({ session }) {
   return (
     <aside className="w-full lg:w-64 border-r bg-gradient-to-b from-gray-100 to-gray-300 dark:from-gray-800 dark:to-gray-900">
       <div className="flex items-center justify-between px-6 py-4 border-b">
-        <span className="text-lg font-semibold">UserComm</span>
+        <PuffLoader color="#36d7b7" />
+        <span className="text-lg font-semibold">My web</span>
         <Button size="icon" variant="ghost">
           <MenuIcon className="h-6 w-6" />
         </Button>

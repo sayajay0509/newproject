@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   CardTitle,
   CardDescription,
@@ -15,7 +15,16 @@ import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import getRelativeTime from "@/util/SetTime";
 
-export default function Detailpage({ post_data, session }) {
+export default function Detailpage({ post_data, session, comment_data }) {
+  let [comment, setComment] = useState("");
+  let [replyComment, setReplyComment] = useState("");
+  let [replyModal, setReplyModal] = useState(false);
+  const toggleReplyModal = (commentId) => {
+    setReplyModal((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId],
+    }));
+  };
   return (
     <div className="px-6 py-4 space-y-4">
       <Card>
@@ -80,73 +89,151 @@ export default function Detailpage({ post_data, session }) {
               Comment{"\n                          "}
             </Button>
           </div>
-          <form method="POST" actions="" className="space-y-4">
-            <CardFooter>
-              <Textarea placeholder="Write a comment..." />
-              <Button className="mt-2">Post Comment</Button>
-            </CardFooter>
-          </form>
+
+          <CardFooter>
+            <Textarea
+              value={comment}
+              onChange={(e) => {
+                setComment(e.target.value);
+              }}
+              placeholder="Write a comment..."
+            />
+            <Button
+              onClick={() => {
+                fetch("/api/comment/comment", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    comment,
+                    parent: post_data._id,
+                    session: session,
+                  }),
+                })
+                  .then((res) => {
+                    if (res.ok) {
+                      window.location.href = `/detail/${post_data._id}`;
+                    } else {
+                      throw new Error("Error in delete");
+                    }
+                  })
+                  .catch((error) => {
+                    console.error("Error:", error);
+                  });
+              }}
+              className="mt-2"
+            >
+              Post Comment
+            </Button>
+          </CardFooter>
         </CardContent>
       </Card>
-      <div className="space-y-4">
-        <div className="flex items-start gap-4">
-          <Avatar className="w-10 h-10 border">
-            <AvatarImage alt="@shadcn" src="/placeholder-user.jpg" />
-            <AvatarFallback>AC</AvatarFallback>
-          </Avatar>
-          <div className="grid gap-1.5">
-            <div className="flex items-center gap-2">
-              <div className="font-semibold">@JohnDoe</div>
-              <div className="text-gray-500 text-xs dark:text-gray-400">
-                5 minutes ago
-              </div>
-            </div>
-            <div>Great post! I found it very informative.</div>
-            <div className="space-y-4 mt-4">
-              <div className="flex items-start gap-4">
-                <Avatar className="w-8 h-8 border">
-                  <AvatarImage alt="@shadcn" src="/placeholder-user.jpg" />
-                  <AvatarFallback>AC</AvatarFallback>
-                </Avatar>
-                <div className="grid gap-1.5">
-                  <div className="flex items-center gap-2">
-                    <div className="font-semibold">@JaneDoe</div>
-                    <div className="text-gray-500 text-xs dark:text-gray-400">
-                      3 minutes ago
+      {comment_data && comment_data.length > 0 ? (
+        <div className="space-y-4">
+          {comment_data.map((comment, i) => (
+            <div key={i} className="flex items-start gap-4">
+              <Avatar className="w-10 h-10 border">
+                <AvatarImage
+                  alt={`@${comment.author}`}
+                  src="/placeholder-user.jpg"
+                />
+                <AvatarFallback>User</AvatarFallback>
+              </Avatar>
+              <div className="grid gap-1.5">
+                <div className="flex items-center gap-2">
+                  <div className="font-semibold">@{comment.author}</div>
+                  <div className="text-gray-500 text-xs dark:text-gray-400">
+                    {getRelativeTime(new Date(comment.publishDate))}
+                  </div>
+                </div>
+                <div>{comment.content}</div>
+                {session ? (
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Button
+                      onClick={() => toggleReplyModal(comment._id)}
+                      size="icon"
+                      variant="ghost"
+                    >
+                      <ReplyIcon className="h-5 w-5" />
+                    </Button>
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Reply
+                    </span>
+                  </div>
+                ) : null}
+                {replyModal[comment._id] && (
+                  <div className="mt-2">
+                    <Textarea
+                      value={replyComment}
+                      onChange={(e) => {
+                        setReplyComment(e.target.value);
+                      }}
+                      style={{ width: "500%", minHeight: "100px" }}
+                      placeholder="Write a reply..."
+                    />
+                    <Button
+                      onClick={() => {
+                        fetch("/api/replycomment/replycomment", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            replyComment,
+                            replyparent: comment._id,
+                            session: session,
+                          }),
+                        })
+                          .then((res) => {
+                            if (res.ok) {
+                              window.location.href = `/detail/${post_data._id}`;
+                            } else {
+                              throw new Error("Error in delete");
+                            }
+                          })
+                          .catch((error) => {
+                            console.error("Error:", error);
+                          });
+                      }}
+                      className="mt-2"
+                    >
+                      Post Reply
+                    </Button>
+                  </div>
+                )}
+                {comment.replies?.map((reply, replyIndex) => (
+                  <div key={replyIndex} className="space-y-4 mt-4">
+                    <div className="flex items-start gap-4">
+                      <Avatar className="w-10 h-10 border">
+                        <AvatarImage
+                          alt="@shadcn"
+                          src="/placeholder-user.jpg"
+                        />
+                        <AvatarFallback>User</AvatarFallback>
+                      </Avatar>
+                      <div className="grid gap-1.5">
+                        <div className="flex items-center gap-2">
+                          <div className="font-semibold">
+                            @{reply.replyauthor}
+                          </div>
+                          <div className="text-gray-500 text-xs dark:text-gray-400">
+                            {getRelativeTime(new Date(reply.replypublishDate))}
+                          </div>
+                        </div>
+                        <div>{reply.replycontent}</div>
+                      </div>
                     </div>
                   </div>
-                  <div>I agree with you, John!</div>
-                </div>
+                ))}
               </div>
             </div>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="text-center text-gray-500 dark:text-gray-400">
+            No comments yet.
           </div>
         </div>
-        <div className="flex items-start gap-4">
-          <Avatar className="w-10 h-10 border">
-            <AvatarImage alt="@shadcn" src="/placeholder-user.jpg" />
-            <AvatarFallback>AC</AvatarFallback>
-          </Avatar>
-          <div className="grid gap-1.5">
-            <div className="flex items-center gap-2">
-              <div className="font-semibold">@JaneDoe</div>
-              <div className="text-gray-500 text-xs dark:text-gray-400">
-                10 minutes ago
-              </div>
-            </div>
-            <div>Thanks for sharing this post. It was really helpful.</div>
-            <div className="flex items-center space-x-2 mt-2">
-              <Button size="icon" variant="ghost">
-                <ReplyIcon className="h-5 w-5" />
-              </Button>
-              <span className="text-gray-500 dark:text-gray-400">Reply</span>
-            </div>
-            <div className="mt-2">
-              <Textarea placeholder="Write a reply..." />
-              <Button className="mt-2">Post Reply</Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

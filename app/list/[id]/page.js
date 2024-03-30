@@ -13,7 +13,7 @@ export default async function page(props) {
   let post_data = await db
     .collection("post")
     .find()
-    .skip((props.params.id - 1) * 2)
+    .skip((props.params.id - 1) * 4)
     .limit(4)
     .toArray();
   let numberOfpost = await db.collection("post").countDocuments();

@@ -22,12 +22,22 @@ export default async function page(props) {
   let post_data = await db
     .collection("post")
     .findOne({ _id: new ObjectId(props.params) });
+  let comment_data = await db
+    .collection("comment")
+    .find({ parent: new ObjectId(props.params) })
+    .toArray();
+
   let session = await getServerSession(authOptions);
 
   return (
     <div>
       <ListBar title="User Community" NameofButton="New Post" />
-      <Detailpage session={session} props={props} post_data={post_data} />
+      <Detailpage
+        session={session}
+        props={props}
+        post_data={post_data}
+        comment_data={comment_data}
+      />
     </div>
   );
 }
