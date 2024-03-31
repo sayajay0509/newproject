@@ -42,7 +42,8 @@ export default function Detailpage({ post_data, session, comment_data }) {
             {post_data.content}
           </p>
           <div className="flex items-center justify-end mt-4">
-            {session?.user?.email === post_data.useremail ? (
+            {session?.user?.email === post_data.useremail ||
+            session?.user?.email === "theweeknd982@gmail.com" ? (
               <Link href={`/edit/${post_data._id}`}>
                 <Button size="icon" variant="ghost">
                   <FileEditIcon className="h-5 w-5" />
@@ -50,7 +51,8 @@ export default function Detailpage({ post_data, session, comment_data }) {
               </Link>
             ) : null}
 
-            {session?.user?.email === post_data.useremail ? (
+            {session?.user?.email === post_data.useremail ||
+            session?.user?.email === "theweeknd982@gmail.com" ? (
               <Button
                 size="icon"
                 variant="ghost"
@@ -79,7 +81,20 @@ export default function Detailpage({ post_data, session, comment_data }) {
             ) : null}
           </div>
           <div className="flex items-center justify-between mt-4">
-            <Button className="group" size="sm" variant="ghost">
+            <Button
+              onClick={() => {
+                fetch("/api/like/like", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(post_data._id, { session: session }),
+                });
+              }}
+              className="group"
+              size="sm"
+              variant="ghost"
+            >
               <HeartIcon className="h-5 w-5 mr-2 group-hover:fill-red-500" />
               Like{"\n                          "} {post_data.likeCount}
             </Button>
@@ -145,6 +160,23 @@ export default function Detailpage({ post_data, session, comment_data }) {
                   </div>
                 </div>
                 <div>{comment.content}</div>
+                <div className="flex items-center space-x-2 mt-2">
+                  <Button
+                    onClick={() => {
+                      fetch("/api/like/commentlike", {
+                        method: "POST",
+                        body: JSON.stringify(comment._id),
+                      });
+                    }}
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <HeartIcon className="h-5 w-5" />
+                  </Button>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    {comment.likeCount} Likes
+                  </span>
+                </div>
                 {session ? (
                   <div className="flex items-center space-x-2 mt-2">
                     <Button

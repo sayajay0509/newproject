@@ -17,8 +17,9 @@ function ListItem({ post_data }) {
               <CardTitle className="flex flex-col lg:flex-row justify-between items-center lg:items-start">
                 <span>{post.title}</span>
                 <div className="flex items-center gap-2">
-                  <HeartIcon className="h-5 w-5" />
                   <span>{post.likeCount}</span>
+                  <HeartIcon className="h-5 w-5" />
+
                   <span>{getRelativeTime(new Date(post.publishDate))}</span>
                 </div>
               </CardTitle>

@@ -14,6 +14,7 @@ export default async function handler(req, res) {
       parent: new ObjectId(req.body.parent),
       author: req.body.session.user.name,
       publishDate: currentDate,
+      likeCount: 0,
     };
     await db.collection("comment").insertOne(CommentData);
     console.log("Save Data: " + CommentData);

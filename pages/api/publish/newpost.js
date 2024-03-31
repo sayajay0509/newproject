@@ -5,6 +5,7 @@ import { authOptions } from "../auth/[...nextauth]";
 export default async function handler(req, res) {
   let session = await getServerSession(req, res, authOptions);
   let currentDate = new Date();
+
   if (req.method == "POST") {
     let db = (await connectDB).db("forum");
 
@@ -14,6 +15,7 @@ export default async function handler(req, res) {
       useremail: session.user.email,
       username: session.user.name,
       publishDate: currentDate,
+      likeCount: 0,
     };
     console.log(SaveData);
     console.log("Hi: " + SaveData.publishDate);
