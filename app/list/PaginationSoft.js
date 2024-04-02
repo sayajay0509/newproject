@@ -8,6 +8,8 @@ import {
   PaginationContent,
   Pagination,
 } from "@/components/ui/pagination";
+import { Input } from "@/components/ui/input";
+
 function PaginationSoft({ pages, props }) {
   return (
     <div>
