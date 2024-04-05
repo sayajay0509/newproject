@@ -25,32 +25,34 @@ function ListBar({ title, NameofButton, session }) {
     <header className="flex items-center justify-between px-6 py-4 border-b">
       <h1 className="text-lg font-semibold">{title}</h1>
 
-      <Input
-        onChange={(e) => {
-          let value = e.target.value;
-          setInputValue(value);
-        }}
-        className="w-64"
-        placeholder="Search posts and press Enter key"
-        type="search"
-        value={inputValue}
-      />
-      <Button
-        variant="outline"
-        onClick={() => {
-          fetch("/api/search/search", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(inputValue),
-          });
-        }}
-      >
-        Search
-      </Button>
+      <div className="flex">
+        <Input
+          onChange={(e) => {
+            let value = e.target.value;
+            setInputValue(value);
+          }}
+          className="w-64 mr-4"
+          placeholder="Search posts"
+          type="search"
+          value={inputValue}
+        />
+        <Button
+          variant="outline"
+          onClick={() => {
+            fetch("/api/search/search", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(inputValue),
+            });
+          }}
+        >
+          Search
+        </Button>
+      </div>
 
-      {session ? (
+      {/* {session ? (
         <Link href="/newpost">
           <Button variant="outline">{NameofButton}</Button>
         </Link>
@@ -58,7 +60,7 @@ function ListBar({ title, NameofButton, session }) {
         <Button variant="outline" disabled>
           {NameofButton}
         </Button>
-      )}
+      )} */}
     </header>
   );
 }

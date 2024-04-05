@@ -35,7 +35,15 @@ export default function Detailpage({ post_data, session, comment_data }) {
               {getRelativeTime(new Date(post_data.publishDate))}
             </div>
           </CardTitle>
-          <CardDescription>{post_data.authoremail}</CardDescription>
+          <CardDescription>
+            <div className="flex items-center">
+              <Avatar className="w-10 h-10 border mr-2">
+                <AvatarImage alt="" src="/placeholder-user.jpg" />
+                <AvatarFallback>User</AvatarFallback>
+              </Avatar>
+              <span>{post_data.username}</span>
+            </div>
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-gray-500 dark:text-gray-400">

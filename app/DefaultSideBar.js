@@ -41,6 +41,13 @@ function DefaultSideBar({ session }) {
         </Link>
         <Link
           className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-50"
+          href="#"
+        >
+          <TextIcon className="h-5 w-5" />
+          <span>Chat Room</span>
+        </Link>
+        <Link
+          className="flex items-center space-x-2 text-gray-500 hover:text-gray-900 dark:hover:text-gray-50"
           href="/register"
         >
           <UserPlusIcon className="h-5 w-5" />
@@ -225,6 +232,26 @@ function UserPlusIcon(props) {
       <circle cx="9" cy="7" r="4" />
       <line x1="19" x2="19" y1="8" y2="14" />
       <line x1="22" x2="16" y1="11" y2="11" />
+    </svg>
+  );
+}
+function TextIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M17 6.1H3" />
+      <path d="M21 12.1H3" />
+      <path d="M15.1 18H3" />
     </svg>
   );
 }

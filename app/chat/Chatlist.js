@@ -1,30 +1,27 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import React from "react";
 import {
   CardTitle,
   CardDescription,
   CardHeader,
   Card,
 } from "@/components/ui/card";
-import getRelativeTime from "@/util/SetTime";
-import Link from "next/link";
 
-function ListItem({ post_data }) {
+import Link from "next/link";
+import getRelativeTime from "@/util/SetTime";
+export default function Chatlist({ chatlist_data }) {
   return (
     <div className="px-6 py-4 space-y-4">
-      {post_data.map((post, i) => (
-        <Link href={`/detail/${post._id}`} key={i}>
-          <Card key={i}>
+      {chatlist_data.map((chat, index) => (
+        <Link href={`/chat/${chat._id}`} key={index}>
+          <Card>
             <CardHeader>
               <CardTitle className="flex flex-col lg:flex-row justify-between items-center lg:items-start">
-                <span>{post.title}</span>
+                <span>{chat.chatlistname}</span>
                 <div className="flex items-center gap-2">
-                  <span>{post.likeCount}</span>
-                  <HeartIcon className="h-5 w-5" />
-
-                  <span>{getRelativeTime(new Date(post.publishDate))}</span>
+                  <span>{getRelativeTime(new Date(chat.publishDate))}</span>
                 </div>
               </CardTitle>
-              <CardDescription>{post.username}</CardDescription>
+              <CardDescription>{chat.createuser}</CardDescription>
             </CardHeader>
           </Card>
         </Link>
@@ -32,9 +29,6 @@ function ListItem({ post_data }) {
     </div>
   );
 }
-
-export default ListItem;
-
 function HeartIcon(props) {
   return (
     <svg
