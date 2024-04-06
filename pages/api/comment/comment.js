@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       likeCount: 0,
     };
     await db.collection("comment").insertOne(CommentData);
-    console.log("Save Data: " + CommentData);
+
     res.redirect(302, `/detail/${req.body.parent}`);
   }
 }

@@ -6,7 +6,6 @@ import Chatlist from "./Chatlist";
 export default async function page() {
   let db = (await connectDB).db("forum");
   let chatlist_data = await db.collection("chatlist").find().toArray();
-  console.log(chatlist_data._id);
 
   return (
     <div>

@@ -8,12 +8,10 @@ export default async function handler(req, res) {
 
   if (req.method == "POST") {
     let db = (await connectDB).db("forum");
-    let foundData = await db
-      .collection("post")
-      .findOne({
-        _id: new ObjectId(req.body),
-        whopressbutton: session.user.email,
-      });
+    let foundData = await db.collection("post").findOne({
+      _id: new ObjectId(req.body),
+      whopressbutton: session.user.email,
+    });
     if (!foundData) {
       await db.collection("post").updateOne(
         { _id: new ObjectId(req.body) },
@@ -25,7 +23,5 @@ export default async function handler(req, res) {
     } else {
       res.redirect("/");
     }
-
-    console.log(req.body);
   }
 }

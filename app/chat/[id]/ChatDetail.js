@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import io from "socket.io-client";
 import { Button } from "@/components/ui/button";
 import {
   CardTitle,
@@ -21,7 +21,30 @@ export default function ChatDetail({
   chatlist_data,
   session,
 }) {
+  const socket = io("http://localhost:3000");
+  let [messages, setMessages] = useState([]);
   let [inputValue, setinputValue] = useState("");
+  useEffect(() => {
+    socket.on("receiveMessage", (message) => {
+      setMessages((messages) => [...messages, message]);
+    });
+  }, []);
+  const sendMessage = () => {
+    if (inputValue) {
+      const message = {
+        content: inputValue,
+        sender: session.user.name,
+        sender_id: session.user.email,
+        publishDate: new Date(),
+        parent: parentId,
+      };
+      // 서버에 메시지 전송
+      socket.emit("sendMessage", message);
+      // 클라이언트 상태 업데이트
+      setMessages((messages) => [...messages, message]);
+      setinputValue("");
+    }
+  };
   return (
     <div>
       <main className="flex-1 overflow-y-auto">
@@ -84,6 +107,15 @@ export default function ChatDetail({
                 )
               )}
             </CardContent>
+            <ul>
+              {messages.map((msg, index) => (
+                <li key={index}>
+                  {msg.content}
+                  {msg.sender}
+                  {getRelativeTime(new Date(msg.publishDate))}
+                </li>
+              ))}
+            </ul>
             <CardFooter>
               <Textarea
                 onChange={(e) => {
@@ -91,31 +123,7 @@ export default function ChatDetail({
                 }}
                 placeholder="Write a message..."
               />
-              <Button
-                onClick={() => {
-                  fetch("/api/chat/chat", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                      content: inputValue,
-                      parent: parentId,
-                    }),
-                  })
-                    .then((res) => {
-                      if (res.ok) {
-                        window.location.href = `/chat/${parentId}`;
-                      } else {
-                        throw new Error("Error in post");
-                      }
-                    })
-                    .catch((error) => {
-                      console.error("Error:", error);
-                    });
-                }}
-                className="mt-2"
-              >
+              <Button onClick={sendMessage} className="mt-2">
                 Send Message
               </Button>
             </CardFooter>

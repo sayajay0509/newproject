@@ -17,8 +17,7 @@ export default async function handler(req, res) {
       publishDate: currentDate,
       likeCount: 0,
     };
-    console.log(SaveData);
-    console.log("Hi: " + SaveData.publishDate);
+
     db.collection("post").insertOne(SaveData);
   }
   res.redirect(302, "/newpost");

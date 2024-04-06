@@ -5,7 +5,6 @@ import { authOptions } from "../auth/[...nextauth]";
 
 export default async function handler(req, res) {
   if (req.method == "DELETE") {
-    console.log(req.body);
     let session = await getServerSession(req, res, authOptions);
     let db = (await connectDB).db("forum");
     let foundData = await db
