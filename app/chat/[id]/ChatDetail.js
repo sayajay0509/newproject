@@ -21,27 +21,38 @@ export default function ChatDetail({
   chatlist_data,
   session,
 }) {
-  const socket = io("http://localhost:3000");
-  let [messages, setMessages] = useState([]);
   let [inputValue, setinputValue] = useState("");
+  const [socket, setSocket] = useState(null);
+  const [messages, setMessages] = useState(chat_data);
+  let publishDate = new Date();
+
   useEffect(() => {
-    socket.on("receiveMessage", (message) => {
-      setMessages((messages) => [...messages, message]);
+    // 소켓 연결 초기화
+    const newSocket = io("http://localhost:3000");
+    setSocket(newSocket);
+    newSocket.on("message", (newMessage) => {
+      // 새 메시지를 messages 상태에 추가합니다.
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
+
+    return () => {
+      newSocket.disconnect();
+    };
   }, []);
-  const sendMessage = () => {
-    if (inputValue) {
-      const message = {
-        content: inputValue,
-        sender: session.user.name,
-        sender_id: session.user.email,
-        publishDate: new Date(),
-        parent: parentId,
-      };
-      // 서버에 메시지 전송
-      socket.emit("sendMessage", message);
-      // 클라이언트 상태 업데이트
-      setMessages((messages) => [...messages, message]);
+  useEffect(() => {
+    if (socket) {
+      socket.on("connect", () => {
+        console.log("Connected to server");
+      });
+
+      socket.on("message", (message) => {
+        console.log("Message received: ", message);
+      });
+    }
+  }, [socket]);
+  const sendMessage = (message) => {
+    if (socket) {
+      socket.emit("message", { message, session, parentId, publishDate });
       setinputValue("");
     }
   };
@@ -66,64 +77,58 @@ export default function ChatDetail({
               <CardDescription>Started by User Name</CardDescription>
             </CardHeader>
             <CardContent>
-              {chat_data.map((chat, index) =>
+              {messages.map((chat, index) =>
+                session?.user?.name === chat.session?.user?.name ||
                 session?.user?.name === chat.participation_users ? (
-                  // Render messages from the current user on the right
+                  // 현재 사용자의 메시지
                   <div
                     key={index}
-                    className="flex flex-col bg-white dark:bg-gray-800 p-4 rounded-lg shadow my-2 self-end text-right"
+                    className="flex flex-col items-end my-2 max-w-3/4 self-end"
                   >
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    <div className="text-xs text-gray-500 mb-1">
                       {getRelativeTime(new Date(chat.publishDate))}
                     </div>
-                    <p className="text-gray-500 dark:text-gray-400 mb-4">
-                      {chat.content}
-                    </p>
+                    <div className="bg-blue-500 text-white p-1 rounded-lg rounded-br-none">
+                      <p className="mb-4">{chat.message || chat.content}</p>
+                    </div>
                   </div>
                 ) : (
-                  // Render messages from other users on the left
+                  // 다른 사용자의 메시지
                   <div
                     key={index}
-                    className="flex flex-col bg-white dark:bg-gray-800 p-4 rounded-lg shadow my-2"
+                    className="flex flex-col items-start my-2 max-w-3/4 self-start"
                   >
                     <div className="flex items-center mb-2">
-                      <Avatar className="w-10 h-10 border">
+                      <Avatar className="w-10 h-10 border-2 border-gray-300">
                         <AvatarImage alt={``} src="/placeholder-user.jpg" />
                         <AvatarFallback>User</AvatarFallback>
                       </Avatar>
                       <div className="ml-4">
                         <div className="font-semibold">
-                          {chat.participation_users}
+                          {chat.participation_users || session?.user?.name}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="text-xs text-gray-500">
                           {getRelativeTime(new Date(chat.publishDate))}
                         </div>
                       </div>
                     </div>
-                    <p className="text-gray-500 dark:text-gray-400 mb-4">
-                      {chat.content}
-                    </p>
+                    <div className="bg-gray-500 text-white p-1 rounded-lg rounded-bl-none">
+                      <p className="mb-4">{chat.content || chat.message}</p>
+                    </div>
                   </div>
                 )
               )}
             </CardContent>
-            <ul>
-              {messages.map((msg, index) => (
-                <li key={index}>
-                  {msg.content}
-                  {msg.sender}
-                  {getRelativeTime(new Date(msg.publishDate))}
-                </li>
-              ))}
-            </ul>
+
             <CardFooter>
               <Textarea
+                value={inputValue}
                 onChange={(e) => {
                   setinputValue(e.target.value);
                 }}
                 placeholder="Write a message..."
               />
-              <Button onClick={sendMessage} className="mt-2">
+              <Button onClick={() => sendMessage(inputValue)} className="mt-2">
                 Send Message
               </Button>
             </CardFooter>
